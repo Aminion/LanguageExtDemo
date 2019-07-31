@@ -1,6 +1,8 @@
 ﻿using LanguageExt;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using static LanguageExt.Prelude;
 
 namespace LanguageExtDemo
@@ -50,6 +52,43 @@ namespace LanguageExtDemo
             int x = 0;
             Try<int> resultOrExeption = Try(() => 4 / x);
             Either<Exception, int> resultOrLeft = resultOrExeption.ToEither();
+
+            return unit;
+        }
+
+
+        IEnumerable<Task<int>> F() => throw new NotImplementedException();
+        Option<IEnumerable<int>> F1() => throw new NotImplementedException();
+
+        Unit TraversalExample()
+        {
+
+            IEnumerable<Task<string>> TaskOfEnumerable = F()
+                .MapT(toString)
+                .FilterT(s => s != string.Empty);
+
+
+            Option<IEnumerable<string>> EnumerableOfEithers = F1()
+                .MapT(toString)
+                .FilterT(s => s != string.Empty);
+
+            IEnumerable<Option<string>> EnumerableOfEithersFlip = EnumerableOfEithers.Sequence();
+
+            Task<IEnumerable<string>> TaskOfEnumerableFlip = TaskOfEnumerable.Sequence();
+
+            return unit;
+        }
+
+
+        Unit EnumerableHelpersExample()
+        {
+            var options = Enumerable.Empty<Option<int>>();
+            Option<IEnumerable<int>> flippedOptions = options.Sequence();
+
+            var validations = Enumerable.Empty<Validation<string,int>>();
+            Validation<string, IEnumerable<int>> validationsOptions = validations.Sequence();
+
+            var onlySomes = Enumerable.Range(1, 10).Choose(x => x % 2 == 0 ? Some(x) : None);
 
             return unit;
         }
